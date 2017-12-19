@@ -22,6 +22,6 @@ Route::resources([
 ]);
 
 Route::middleware('devicesecret')->group(function() {
-    Route::post("devices/{id}/config", "DeviceController@config");
+    Route::get("devices/{id}/config", "DeviceController@config");
     Route::post("devices/{id}/execute", "DeviceController@execute");
 });

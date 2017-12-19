@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use App\Device;
+use App\Event;
+use App\Plant;
+use App\Task;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -107,7 +111,7 @@ class DeviceController extends Controller
                                 $time_interval = min($task->time_interval, $time_interval);
                             }
 
-                            $config .= "," . $plant->id . "," .
+                            $config .= "," . $task->id . "," .
                                   $plant->forward_pin . "," .
                                   $plant->reverse_pin . "," .
                                   $plant->adc_pin;
@@ -128,7 +132,57 @@ class DeviceController extends Controller
         return $config;
     }
 
-    public function execute($id)
+    public function execute(Request $request, $id)
     {
+        $device = Device::findOrFail($id);
+        $idx = $request->input("i");
+        $flip = $request->input("f");
+        $value = $request->input("v");
+        $watering_time = 10;
+        $watered = false;
+
+        if($idx != null &&
+           $flip != null &&
+           $value != null)
+        {
+            $idx = (int) $idx;
+            $flip = (int) $flip;
+            $value = (int) $value;
+
+            $task = Task::findOrFail($idx);
+            if($task->plant->device->id == $device->id)
+            {
+                if((($flip) && ($value < 512)) ||
+                   ((!$flip) && ($value > 512)))
+                {
+                    $watered = true;
+                }
+
+                if($task->data != null)
+                {
+                    $data = json_decode($task->data);
+                    if($data->version == 1)
+                    {
+                        $watering_time = $data->time;
+                    }
+                }
+
+                $event = new Event;
+                $event->task_id = $task->plant->id;
+                $event->value = $value;
+                $event->flip = $flip;
+                $event->watered = $watered;
+                $event->save();
+            }
+        }
+
+        if($watered == true)
+        {
+            return $watering_time;
+        }
+        else
+        {
+            return 0;
+        }
     }
 }

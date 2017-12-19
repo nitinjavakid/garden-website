@@ -33,13 +33,37 @@ class TesterSeeder extends Seeder
             "device_id" => $device->id,
             "forward_pin" => "D6",
             "reverse_pin" => "D5",
-            "adc_pin" => "C0"
+            "adc_pin" => "C0",
+            "enabled" => true
         ]);
 
         $task = App\Task::firstOrCreate([
             "type" => "water",
             "time_interval" => 10,
-            "plant_id" => $plant->id
+            "plant_id" => $plant->id,
+            "data" => json_encode([
+                "version" => 1,
+                "time" => 10
+            ])
+        ]);
+
+        $plant = App\Plant::firstOrCreate([
+            "name" => "Chilli 2",
+            "device_id" => $device->id,
+            "forward_pin" => "D8",
+            "reverse_pin" => "D7",
+            "adc_pin" => "C1",
+        ]);
+
+        $task = App\Task::firstOrCreate([
+            "type" => "water",
+            "time_interval" => 10,
+            "plant_id" => $plant->id,
+            "enabled" => false,
+            "data" => json_encode([
+                "version" => 1,
+                "time" => 10
+            ])
         ]);
     }
 }

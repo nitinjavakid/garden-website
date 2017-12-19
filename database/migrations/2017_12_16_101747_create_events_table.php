@@ -15,8 +15,11 @@ class CreateEventsTable extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer("plant_id")->unsigned();
-            $table->foreign("plant_id")->references("id")->on("plants");
+            $table->integer("value")->unsigned();
+            $table->integer("flip")->unsigned();
+            $table->boolean("watered");
+            $table->integer("task_id")->unsigned();
+            $table->foreign("task_id")->references("id")->on("tasks");
             $table->timestamps();
         });
     }

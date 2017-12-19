@@ -18,7 +18,7 @@ class DeviceSecret
      */
     public function handle($request, Closure $next)
     {
-        if(($request->input("secret") == null) ||
+        if((!$request->hasheader("X-ApiKey")) ||
            (!isset($request->route()->parameters["id"])) ||
            ($request->route()->parameters["id"] == null))
         {
@@ -27,7 +27,7 @@ class DeviceSecret
 
         $device = Device::find($request->route()->parameters["id"]);
         if(($device == null) ||
-           (!Hash::check($request->input("secret"), $device->secret)))
+           (!Hash::check($request->header("X-ApiKey"), $device->secret)))
         {
             return response(null, 401);
         }
