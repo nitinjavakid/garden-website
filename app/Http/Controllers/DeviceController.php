@@ -8,6 +8,7 @@ use App\Event;
 use App\Plant;
 use App\Task;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DeviceController extends Controller
 {
@@ -167,12 +168,28 @@ class DeviceController extends Controller
                     }
                 }
 
-                $event = new Event;
-                $event->task_id = $task->plant->id;
-                $event->value = $value;
-                $event->flip = $flip;
-                $event->watered = $watered;
-                $event->save();
+                DB::beginTransaction();
+                try
+                {
+                    $event = new Event;
+                    $event->task_id = $task->plant->id;
+                    $event->value = $value;
+                    $event->flip = $flip;
+                    $event->watered = $watered;
+                    $event->save();
+
+                    if($watered)
+                    {
+                        $plant = $task->plant;
+                        $plant->last_watered_event_id = $event->id;
+                        $plant->save();
+                    }
+                    DB::commit();
+                }
+                catch( \Exception $e)
+                {
+                    DB::rollback();
+                }
             }
         }
 

@@ -22,7 +22,10 @@ class CreateTasksTable extends Migration
             $table->json("data")->nullable();
             $table->json("rules")->nullable();
             $table->integer("plant_id")->unsigned();
-            $table->foreign("plant_id")->references("id")->on("plants");
+            $table->foreign("plant_id")
+                ->references("id")
+                ->on("plants")
+                ->onDelete("cascade");
         });
     }
 

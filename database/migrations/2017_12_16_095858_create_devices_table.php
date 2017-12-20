@@ -20,7 +20,10 @@ class CreateDevicesTable extends Migration
             $table->boolean("enabled")->default(true);
             $table->timestamp("last_contacted")->nullable();
             $table->integer("garden_id")->unsigned();
-            $table->foreign("garden_id")->references("id")->on("gardens");
+            $table->foreign("garden_id")
+                ->references("id")
+                ->on("gardens")
+                ->onDelete("cascade");
         });
     }
 
