@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Web;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Plant;
+use App\Device;
+use DB;
+use Auth;
 
 class PlantController extends Controller
 {
@@ -22,9 +25,13 @@ class PlantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $plant = new Plant;
+        $plant->device_id = $request->input("device");
+        return view("plant", [
+            "plant" => $plant
+        ]);
     }
 
     /**
@@ -35,7 +42,32 @@ class PlantController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $device = Device::findOrFail($request->input("device_id"));
+        if($device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
+
+        $plant = new Plant;
+        DB::beginTransaction();
+        try
+        {
+            $plant->name = $request->input("name");
+            $plant->device_id = $request->input("device_id");
+            $plant->reverse_pin = $request->input("reverse_pin");
+            $plant->forward_pin = $request->input("forward_pin");
+            $plant->adc_pin = $request->input("adc_pin");
+            $plant->enabled = $request->has("enabled");
+            $plant->save();
+
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return response(null, 500);
+        }
+        return redirect()->route("plant.show", $plant->id);
     }
 
     /**
@@ -63,7 +95,7 @@ class PlantController extends Controller
      */
     public function edit($id)
     {
-        //
+
     }
 
     /**
@@ -75,7 +107,26 @@ class PlantController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $plant = Plant::findOrFail($id);
+
+        DB::beginTransaction();
+        try
+        {
+            $plant->name = $request->input("name");
+            $plant->reverse_pin = $request->input("reverse_pin");
+            $plant->forward_pin = $request->input("forward_pin");
+            $plant->adc_pin = $request->input("adc_pin");
+            $plant->enabled = $request->has("enabled");
+            $plant->save();
+
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+        }
+
+        return redirect()->route("plant.show", $id);
     }
 
     /**

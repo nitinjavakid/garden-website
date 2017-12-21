@@ -15,7 +15,12 @@
                     @endif
 
                     <div class="panel panel-default">
-                    <div class="panel-heading">Plants</div>
+                    <div class="panel-heading">
+                        <div class="panel-title pull-left">Plants</div>
+                        {{ link_to_route('plant.create', "", ["device" => $device->id], [ "class" => "btn btn-primary btn-sm glyphicon glyphicon-plus pull-right"]) }}
+                        </a>
+                        <div class="clearfix"></div>
+                    </div>
                     <ul class="list-group">
                     @foreach ($device->plants as $plant)
                         <li class="list-group-item">

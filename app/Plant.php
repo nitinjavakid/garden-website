@@ -3,10 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Collective\Html\Eloquent\FormAccessible;
 
 class Plant extends Model
 {
     public $timestamps = false;
+
     public function device()
     {
         return $this->belongsTo("App\Device");

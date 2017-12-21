@@ -5,55 +5,90 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-            <div class="panel-heading">Plant - {{ $plant->name }}</div>
+                <div class="panel-heading">Plant
+                @if ($plant->id != null)
+                    - {{ $plant->name }}
+                @endif
+                </div>
                 <div class="panel-body">
                     @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
+                    <div class="alert alert-success">
+                        {{ session('status') }}
+                    </div>
                     @endif
 
                     <div class="panel panel-default">
-                    <div class="panel-heading">Tasks</div>
-                    <ul class="list-group">
-                    @foreach ($plant->tasks as $task)
-                        <li class="list-group-item">
-                            <a href="/task/{{ $task->id }}">
+                       <div class="panel-heading">Config</div>
+                       <div class="panel-body">
+                    {{ Form::model($plant, ['route' => [$plant->id != null ? 'plant.update' : 'plant.store', $plant->id]]) }}
+                          <div class="form-group">
+                             {{ Form::hidden("device_id") }}
+                             {{ Form::label('name', 'Name') }}
+                             {{ Form::text("name", null, ["class" => "form-control"]) }}
+                             {{ Form::label("forward_pin", "Forward Pin") }}
+                             {{ Form::pinSelect("forward_pin") }}
+
+                             {{ Form::label("reverse_pin", "Reverse Pin") }}
+                             {{ Form::pinSelect("reverse_pin") }}
+
+                             {{ Form::label("adc_pin", "ADC Pin") }}
+                             {{ Form::pinSelect("adc_pin") }}
+
+                             <div class="checkbox">
+                                 <label>
+                                     {{ Form::checkbox("enabled") }} Enabled
+                                 </label>
+                             </div>
+                          </div>
+                          {{ Form::submit("Save", [ "class" => "btn btn-default"]) }}
+                          {{ Form::close() }}
+                       </div>
+                    </div>
+
+                    @if ($plant->id != null)
+                    <div class="panel panel-default">
+                       <div class="panel-heading">Tasks</div>
+                       <ul class="list-group">
+                       @foreach ($plant->tasks as $task)
+                          <li class="list-group-item">
+                             <a href="/task/{{ $task->id }}">
                                 {{ $task->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                    </ul>
+                             </a>
+                          </li>
+                       @endforeach
+                       </ul>
                     </div>
 
                     <div class="panel panel-default">
-                    <div class="panel-heading">Events</div>
-                    <table class="table">
-                    <thead>
-                       <tr>
-                          <th>Id</th>
-                          <th>Time</th>
-                          <th>Flip</th>
-                          <th>Value</th>
-                          <th>Watered</th>
-                          <th>Task</th>
-                       </tr>
-                    </thead>
-                    @foreach ($events as $event)
-                        <tr class="{{ $event->watered ? "success" : "" }}">
-                            <td>{{ $event->id }}</td>
-                            <td>{{ $event->created_at }}</td>
-                            <td>{{ $event->flip }}</td>
-                            <td>{{ $event->value }}</td>
-                            <td>{{ $event->watered }}</td>
-                            <td>{{ $event->task->name }}</td>
-                        </tr>
-                    @endforeach
-                    </table>
-                </div>
-                <nav>
-                    <center>{{ $events }}</center>
-                </nav>
+                       <div class="panel-heading">Events</div>
+                       <table class="table">
+                          <thead>
+                             <tr>
+                                <th>Id</th>
+                                <th>Time</th>
+                                <th>Flip</th>
+                                <th>Value</th>
+                                <th>Watered</th>
+                                <th>Task</th>
+                             </tr>
+                          </thead>
+                          @foreach ($events as $event)
+                          <tr class="{{ $event->watered ? "success" : "" }}">
+                             <td>{{ $event->id }}</td>
+                             <td>{{ $event->created_at }}</td>
+                             <td>{{ $event->flip }}</td>
+                             <td>{{ $event->value }}</td>
+                             <td>{{ $event->watered }}</td>
+                             <td>{{ $event->task->name }}</td>
+                          </tr>
+                          @endforeach
+                       </table>
+                    </div>
+                    <nav>
+                        <center>{{ $events }}</center>
+                    </nav>
+                    @endif
+               </div>
             </div>
         </div>
     </div>

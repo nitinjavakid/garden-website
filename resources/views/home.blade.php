@@ -7,7 +7,6 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Gardens</div>
 
-                <div class="panel-body">
                     @if (session('status'))
                         <div class="alert alert-success">
                             {{ session('status') }}
@@ -23,7 +22,6 @@
                         </li>
                     @endforeach
                     </ul>
-                </div>
             </div>
         </div>
     </div>
