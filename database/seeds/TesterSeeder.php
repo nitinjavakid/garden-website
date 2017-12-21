@@ -38,6 +38,7 @@ class TesterSeeder extends Seeder
         ]);
 
         $task = App\Task::firstOrCreate([
+            "name" => "Water check",
             "type" => "water",
             "time_interval" => 10,
             "plant_id" => $plant->id,
@@ -56,6 +57,7 @@ class TesterSeeder extends Seeder
         ]);
 
         $task = App\Task::firstOrCreate([
+            "name" => "Water check",
             "type" => "water",
             "time_interval" => 10,
             "plant_id" => $plant->id,

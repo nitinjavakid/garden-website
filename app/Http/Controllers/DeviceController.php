@@ -50,7 +50,7 @@ class DeviceController extends Controller
      */
     public function show($id)
     {
-        //
+        
     }
 
     /**
