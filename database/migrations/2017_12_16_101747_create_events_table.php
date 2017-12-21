@@ -17,7 +17,7 @@ class CreateEventsTable extends Migration
             $table->increments('id');
             $table->integer("value")->unsigned();
             $table->integer("flip")->unsigned();
-            $table->boolean("watered");
+            $table->integer("watered")->default(0);
             $table->integer("task_id")->unsigned();
             $table->foreign("task_id")->references("id")->on("tasks");
             $table->timestamps();

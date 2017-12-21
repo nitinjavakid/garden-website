@@ -10,6 +10,6 @@ class Event extends Model
 
     public function task()
     {
-        return $this->belongsTo("task");
+        return $this->belongsTo("App\Task");
     }
 }

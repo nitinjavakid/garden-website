@@ -14,6 +14,8 @@
                         </div>
                     @endif
 
+                    <div class="panel panel-default">
+                    <div class="panel-heading">Plants</div>
                     <ul class="list-group">
                     @foreach ($device->plants as $plant)
                         <li class="list-group-item">
@@ -23,6 +25,7 @@
                         </li>
                     @endforeach
                     </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -16,4 +16,9 @@ class Plant extends Model
     {
         return $this->hasMany("App\Task");
     }
+
+    public function events()
+    {
+        return $this->hasManyThrough("App\Event", "App\Task");
+    }
 }

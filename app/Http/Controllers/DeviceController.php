@@ -175,7 +175,7 @@ class DeviceController extends Controller
                     $event->task_id = $task->plant->id;
                     $event->value = $value;
                     $event->flip = $flip;
-                    $event->watered = $watered;
+                    $event->watered = $watered ? $watering_time : 0;
                     $event->save();
 
                     if($watered)

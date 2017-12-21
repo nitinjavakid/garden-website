@@ -47,7 +47,11 @@ class PlantController extends Controller
     public function show($id)
     {
         return view("plant", [
-            "plant" => Plant::findOrFail($id)
+            "plant" => Plant::findOrFail($id),
+            "events" => Plant::findOrFail($id)
+                        ->events()
+                        ->orderByDesc('created_at')
+                        ->paginate(5)
         ]);
     }
 
