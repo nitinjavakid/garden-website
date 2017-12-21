@@ -20,8 +20,8 @@ class CreateTasksTable extends Migration
             $table->boolean("enabled")->default(true);
             $table->timestamp("last_run")->nullable();
             $table->integer("time_interval");
-            $table->json("data")->nullable();
-            $table->json("rules")->nullable();
+            $table->string("data")->nullable();
+            $table->string("rules")->nullable();
             $table->integer("plant_id")->unsigned();
             $table->foreign("plant_id")
                 ->references("id")
