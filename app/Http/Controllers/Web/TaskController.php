@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Web;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Task;
+use App\Plant;
+use Auth;
+use DB;
 
 class TaskController extends Controller
 {
@@ -22,9 +25,13 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $task = new Task;
+        $task->plant_id = $request->input("plant");
+        return view("task", [
+            "task" => $task
+        ]);
     }
 
     /**
@@ -35,7 +42,30 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $plant = Plant::findOrFail($request->input("plant_id"));
+        if($plant->device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
+
+        $task = new Task;
+        DB::beginTransaction();
+        try
+        {
+            $task->name = $request->input("name");
+            $task->plant_id = $request->input("plant_id");
+            $task->time_interval = $request->input("time_interval");
+            $task->enabled = $request->has("enabled");
+            $task->save();
+
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return response(null, 500);
+        }
+        return redirect()->route("task.show", $task->id);
     }
 
     /**
@@ -46,8 +76,13 @@ class TaskController extends Controller
      */
     public function show($id)
     {
+        $task = Task::findOrFail($id);
         return view("task", [
-            "task" => Task::findOrFail($id)
+            "task" => $task,
+            "events" => $task
+                        ->events()
+                        ->orderByDesc('created_at')
+                        ->paginate(5)
         ]);
     }
 
@@ -71,7 +106,29 @@ class TaskController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        if($task->plant->device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
+
+        DB::beginTransaction();
+        try
+        {
+            $task->name = $request->input("name");
+            $task->time_interval = $request->input("time_interval");
+            $task->enabled = $request->has("enabled");
+            $task->save();
+
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return response(null, 500);
+        }
+
+        return redirect()->route("task.show", $id);
     }
 
     /**
@@ -82,6 +139,27 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $task = Task::findOrFail($id);
+        if($task->plant->device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
+
+        $plant_id = $task->plant->id;
+
+        DB::beginTransaction();
+        try
+        {
+            $task->delete();
+
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return response(null, 500);
+        }
+
+        return redirect()->route("plant.show", $plant_id);
     }
 }

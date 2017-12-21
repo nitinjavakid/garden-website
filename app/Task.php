@@ -12,4 +12,9 @@ class Task extends Model
     {
         return $this->belongsTo("App\Plant");
     }
+
+    public function events()
+    {
+        return $this->hasMany("App\Event");
+    }
 }

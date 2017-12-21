@@ -20,7 +20,11 @@
                     <div class="panel panel-default">
                        <div class="panel-heading">Config</div>
                        <div class="panel-body">
-                    {{ Form::model($plant, ['route' => [$plant->id != null ? 'plant.update' : 'plant.store', $plant->id]]) }}
+                          {{ Form::model($plant, [
+                                "route" => [$plant->id != null ? 'plant.update' : 'plant.store', $plant->id],
+                                "method" => $plant->id != null ? "PUT" : "POST"
+                               ])
+                          }}
                           <div class="form-group">
                              {{ Form::hidden("device_id") }}
                              {{ Form::label('name', 'Name') }}
@@ -47,13 +51,19 @@
 
                     @if ($plant->id != null)
                     <div class="panel panel-default">
-                       <div class="panel-heading">Tasks</div>
+                       <div class="panel-heading">
+                          <div class="panel-title pull-left">Tasks</div>
+                          {{ link_to_route('task.create', "New", ["plant" => $plant->id], [ "class" => "btn btn-primary btn-sm pull-right"]) }}
+                          <div class="clearfix"></div>
+                       </div>
                        <ul class="list-group">
                        @foreach ($plant->tasks as $task)
                           <li class="list-group-item">
-                             <a href="/task/{{ $task->id }}">
-                                {{ $task->name }}
-                             </a>
+                            {{ link_to_route("task.show", $task->name, $task->id, ["class" => "pull-left" ]) }}
+                            {{ Form::open(["route" => ["task.destroy",  $task->id], "method" => "DELETE"]) }}
+                            {{ Form::submit("Delete", ["class" => "btn btn-danger btn-sm pull-right", "onClick" => 'return confirmDelete(this)', "data-name" => $task->name]) }}
+                            {{ Form::close() }}
+                            <div class="clearfix"></div>
                           </li>
                        @endforeach
                        </ul>

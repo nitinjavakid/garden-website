@@ -3,11 +3,6 @@
 @section('content')
 
 <script>
-function confirmDelete(event)
-{
-    return confirm("Do you really want to delete " + $(event).data("name") + "?")
-}
-
 </script>
 <div class="container">
     <div class="row">
