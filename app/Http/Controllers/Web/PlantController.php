@@ -108,6 +108,10 @@ class PlantController extends Controller
     public function update(Request $request, $id)
     {
         $plant = Plant::findOrFail($id);
+        if($plant->device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
 
         DB::beginTransaction();
         try
@@ -124,6 +128,7 @@ class PlantController extends Controller
         catch(\Exception $e)
         {
             DB::rollback();
+            return response(null, 500);
         }
 
         return redirect()->route("plant.show", $id);
@@ -137,6 +142,27 @@ class PlantController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $plant = Plant::findOrFail($id);
+        if($plant->device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
+
+        $device_id = $plant->device->id;
+
+        DB::beginTransaction();
+        try
+        {
+            $plant->delete();
+
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            return response(null, 500);
+        }
+
+        return redirect()->route("device.show", $device_id);
     }
 }
