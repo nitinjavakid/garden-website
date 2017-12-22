@@ -85,7 +85,7 @@ class GardenController extends Controller
      */
     public function edit($id)
     {
-        //
+        return $this->show($id);
     }
 
     /**

@@ -8,7 +8,10 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-            <div class="panel-heading">Device - {{ $device->name }}</div>
+            <div class="panel-heading">Device
+                @if ($device->id != null)
+                    {{ $device->name }}</div>
+                @endif
 
                 <div class="panel-body">
                     @if (session('status'))
@@ -17,6 +20,35 @@
                         </div>
                     @endif
 
+                    <div class="panel panel-default">
+                       <div class="panel-heading">Config</div>
+                       <div class="panel-body">
+                          {{ Form::model($device, [
+                                "route" => [$device->id != null ? 'device.update' : 'device.store', $device->id],
+                                "method" => $device->id != null ? "PUT" : "POST"
+                               ])
+                          }}
+                          <div class="form-group">
+                             {{ Form::hidden("garden_id") }}
+                             {{ Form::label('name', 'Name') }}
+                             {{ Form::text("name", null, ["class" => "form-control"]) }}
+
+                             {{ Form::label('secret', 'Secret') }}
+                             {{ Form::password("secret", ["class" => "form-control"]) }}
+
+                             <div class="checkbox">
+                                 <label>
+                                     {{ Form::checkbox("enabled") }} Enabled
+                                 </label>
+                             </div>
+
+                          </div>
+                          {{ Form::submit("Save", [ "class" => "btn btn-default"]) }}
+                          {{ Form::close() }}
+                       </div>
+                    </div>
+
+                @if ($device->id != null)
                     <div class="panel panel-default">
                     <div class="panel-heading">
                         <div class="panel-title pull-left">Plants</div>
@@ -36,6 +68,7 @@
                     @endforeach
                     </ul>
                     </div>
+                @endif
                 </div>
             </div>
         </div>

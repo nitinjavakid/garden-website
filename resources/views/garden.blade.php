@@ -36,13 +36,19 @@
 
                     @if ($garden->id != null)
                     <div class="panel panel-default">
-                       <div class="panel-heading">Devices</div>
+                       <div class="panel-heading">
+                          <div class="panel-title pull-left">Devices</div>
+                          {{ link_to_route('device.create', "New", ["garden" => $garden->id], [ "class" => "btn btn-primary btn-sm pull-right"]) }}
+                          <div class="clearfix"></div>
+                       </div>
                        <ul class="list-group">
                           @foreach ($garden->devices as $device)
                              <li class="list-group-item">
-                                <a href="/device/{{ $device->id }}">
-                                   {{ $device->name }}
-                                </a>
+                                {{ link_to_route("device.show", $device->name, $device->id, ["class" => "pull-left" ]) }}
+                                {{ Form::open(["route" => ["device.destroy",  $device->id], "method" => "DELETE"]) }}
+                                {{ Form::submit("Delete", ["class" => "btn btn-danger btn-sm pull-right", "onClick" => 'return confirmDelete(this)', "data-name" => $device->name]) }}
+                                {{ Form::close() }}
+                                <div class="clearfix"></div>
                              </li>
                           @endforeach
                        </ul>
