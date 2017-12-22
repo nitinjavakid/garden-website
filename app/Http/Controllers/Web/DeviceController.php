@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Device;
+use Auth;
 
 class DeviceController extends Controller
 {
@@ -46,6 +47,12 @@ class DeviceController extends Controller
      */
     public function show($id)
     {
+        $device = Device::findOrFail($id);
+        if($device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
+
         return view("device", [
             "device" => Device::findOrFail($id)
         ]);

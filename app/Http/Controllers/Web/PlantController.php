@@ -79,6 +79,11 @@ class PlantController extends Controller
     public function show($id)
     {
         $plant = Plant::findOrFail($id);
+        if($plant->device->garden->user->id != Auth::user()->id)
+        {
+            return response(null, 401);
+        }
+
         return view("plant", [
             "plant" => $plant,
             "events" => $plant
