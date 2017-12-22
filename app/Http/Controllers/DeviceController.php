@@ -50,7 +50,6 @@ class DeviceController extends Controller
      */
     public function show($id)
     {
-        
     }
 
     /**
@@ -140,6 +139,9 @@ class DeviceController extends Controller
         $flip = $request->input("f");
         $value = $request->input("v");
         $watering_time = 10;
+        $forward_pin = "";
+        $reverse_pin = "";
+        $motor_time = 10;
         $watered = false;
 
         if($idx != null &&
@@ -153,7 +155,7 @@ class DeviceController extends Controller
             $task = Task::findOrFail($idx);
             if($task->plant->device->id == $device->id)
             {
-                if((($flip) && ($value < 512)) ||
+                if(true || (($flip) && ($value < 512)) ||
                    ((!$flip) && ($value > 512)))
                 {
                     $watered = true;
@@ -165,6 +167,9 @@ class DeviceController extends Controller
                     if($data->version == 1)
                     {
                         $watering_time = $data->time;
+                        $forward_pin = $data->forward;
+                        $reverse_pin = $data->reverse;
+                        $motor_time = $data->motor_time;
                     }
                 }
 
@@ -195,11 +200,11 @@ class DeviceController extends Controller
 
         if($watered == true)
         {
-            return $watering_time;
+            return $forward_pin . "," . $reverse_pin . "," . $motor_time . "," . $watering_time;
         }
         else
         {
-            return 0;
+            return "";
         }
     }
 }

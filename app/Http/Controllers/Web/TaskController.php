@@ -55,6 +55,7 @@ class TaskController extends Controller
             $task->name = $request->input("name");
             $task->plant_id = $request->input("plant_id");
             $task->time_interval = $request->input("time_interval");
+            $task->data = $request->input("data");
             $task->enabled = $request->has("enabled");
             $task->save();
 
@@ -117,6 +118,7 @@ class TaskController extends Controller
         {
             $task->name = $request->input("name");
             $task->time_interval = $request->input("time_interval");
+            $task->data = $request->input("data");
             $task->enabled = $request->has("enabled");
             $task->save();
 

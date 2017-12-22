@@ -33,6 +33,9 @@
                              {{ Form::label('time_interval', 'Time interval') }}
                              {{ Form::text("time_interval", null, ["class" => "form-control"]) }}
 
+                             {{ Form::label('data', 'Data') }}
+                             {{ Form::textarea("data", null, ["class" => "form-control"]) }}
+
                              <div class="checkbox">
                                  <label>
                                      {{ Form::checkbox("enabled") }} Enabled
