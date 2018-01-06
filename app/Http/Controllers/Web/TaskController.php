@@ -55,7 +55,7 @@ class TaskController extends Controller
             $task->name = $request->input("name");
             $task->plant_id = $request->input("plant_id");
             $task->time_interval = $request->input("time_interval");
-            $task->data = $request->input("data");
+            $task->watering_system_index = $request->input("watering_system_index");
             $task->enabled = $request->has("enabled");
             $task->save();
 
@@ -69,6 +69,17 @@ class TaskController extends Controller
         return redirect()->route("task.show", $task->id);
     }
 
+    public function watering_systems()
+    {
+        $classes = [];
+        $idx = 0;
+        foreach(\App\WateringSystems\WateringSystem::$classes as $key => $value)
+        {
+            $classes[$idx++] = $value;
+        }
+        return $classes;
+    }
+
     /**
      * Display the specified resource.
      *
@@ -80,6 +91,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         return view("task", [
             "task" => $task,
+            "watering_systems" => $this->watering_systems(),
             "events" => $task
                         ->events()
                         ->orderByDesc('created_at')
@@ -118,7 +130,19 @@ class TaskController extends Controller
         {
             $task->name = $request->input("name");
             $task->time_interval = $request->input("time_interval");
-            $task->data = $request->input("data");
+            if($task->watering_system_index != $request->input("watering_system_index"))
+            {
+                $task->watering_system_index = $request->input("watering_system_index");
+            }
+            else
+            {
+                $watering_system = $task->watering_system;
+                foreach($watering_system->needProperties() as $key => $value)
+                {
+                    $watering_system->setProperty($key, $request->input("system_" . $key));
+                }
+                $task->watering_system = $watering_system;
+            }
             $task->enabled = $request->has("enabled");
             $task->save();
 

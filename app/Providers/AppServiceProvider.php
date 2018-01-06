@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Schema::defaultStringLength(200);
+        Schema::defaultStringLength(191);
         Form::component('pinSelect', 'components.form.pinselect', ['name', 'value' => null, 'attributes' => []]);
     }
 
