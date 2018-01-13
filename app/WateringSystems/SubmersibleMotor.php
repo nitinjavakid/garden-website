@@ -11,4 +11,14 @@ class SubmersibleMotor extends WateringSystem
             "forward_pin" => "Forward pin"
         ];
     }
+
+    public function getInstruction()
+    {
+        return $this->getProperty("forward_pin") . "," . $this->getProperty("watering_time");
+    }
+
+    public function getWateringTime()
+    {
+        return (int) $this->getProperty("watering_time");
+    }
 }

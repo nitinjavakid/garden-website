@@ -6,6 +6,10 @@ abstract class WateringSystem
 {
     abstract protected function needProperties();
 
+    abstract protected function getInstruction();
+
+    abstract protected function getWateringTime();
+
     public static $classes = [
         "\App\WateringSystems\NoWatering" => "Dont Water",
         "\App\WateringSystems\SubmersibleMotor" => "Submersible Motor",

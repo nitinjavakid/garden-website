@@ -8,4 +8,14 @@ class NoWatering extends WateringSystem
     {
         return [];
     }
+
+    public function getInstruction()
+    {
+        return "";
+    }
+
+    public function getWateringTime()
+    {
+        return 0;
+    }
 }
