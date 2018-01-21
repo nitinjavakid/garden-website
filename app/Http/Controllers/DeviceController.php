@@ -138,11 +138,7 @@ class DeviceController extends Controller
         $idx = $request->input("i");
         $flip = $request->input("f");
         $value = $request->input("v");
-        $watering_time = 10;
-        $forward_pin = "";
-        $reverse_pin = "";
-        $motor_time = 10;
-        $watered = false;
+        $watering_system = null;
 
         if($idx != null &&
            $flip != null &&
@@ -155,22 +151,11 @@ class DeviceController extends Controller
             $task = Task::findOrFail($idx);
             if($task->plant->device->id == $device->id)
             {
+                $watering_system = \App\WateringSystems\WateringSystem::deserialize($task->data);
                 if(true || (($flip) && ($value < 512)) ||
                    ((!$flip) && ($value > 512)))
                 {
                     $watered = true;
-                }
-
-                if($task->data != null)
-                {
-                    $data = json_decode($task->data);
-                    if($data->version == 1)
-                    {
-                        $watering_time = $data->time;
-                        $forward_pin = $data->forward;
-                        $reverse_pin = $data->reverse;
-                        $motor_time = $data->motor_time;
-                    }
                 }
 
                 DB::beginTransaction();
@@ -180,7 +165,7 @@ class DeviceController extends Controller
                     $event->task_id = $task->plant->id;
                     $event->value = $value;
                     $event->flip = $flip;
-                    $event->watered = $watered ? $watering_time : 0;
+                    $event->watered = $watered ? $watering_system->getWateringTime() : 0;
                     $event->save();
 
                     if($watered)
@@ -200,7 +185,7 @@ class DeviceController extends Controller
 
         if($watered == true)
         {
-            return $forward_pin . "," . $reverse_pin . "," . $motor_time . "," . $watering_time;
+            return $watering_system->getInstruction();
         }
         else
         {
