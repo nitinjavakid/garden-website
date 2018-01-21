@@ -30,7 +30,8 @@ class TaskController extends Controller
         $task = new Task;
         $task->plant_id = $request->input("plant");
         return view("task", [
-            "task" => $task
+            "task" => $task,
+            "watering_systems" => $this->watering_systems()
         ]);
     }
 
