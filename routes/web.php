@@ -20,11 +20,13 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::middleware("auth")->group(function() {
+    Route::get('/profile', 'Web\UserController@profile')->name('profile');
     Route::resources([
         "device" => "Web\DeviceController",
         "plant" => "Web\PlantController",
         "event" => "Web\EventController",
         "garden" => "Web\GardenController",
-        "task" => "Web\TaskController"
+        "task" => "Web\TaskController",
+        "user" => "Web\UserController"
     ]);
 });
