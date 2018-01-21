@@ -15,7 +15,7 @@ class TimeZone extends Migration
     {
         Schema::table('users', function(Blueprint $table)
         {
-            $table->string('timezone')->nullable();
+            $table->string('timezone')->default('Asia/Kolkata');
         });
     }
 
@@ -28,7 +28,7 @@ class TimeZone extends Migration
     {
         Schema::table('users', function(Blueprint $table)
         {
-            $table->drop("timezone");
+            $table->dropColumn("timezone");
         });
     }
 }

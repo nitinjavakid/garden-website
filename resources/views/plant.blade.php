@@ -85,7 +85,7 @@
                           @foreach ($events as $event)
                           <tr class="{{ $event->watered ? "success" : "" }}">
                              <td>{{ $event->id }}</td>
-                             <td>{{ Timezone::convertFromUTC($event->created_at, Auth::user()->timezone, 'F j, Y') }}</td>
+                             <td>{{ Timezone::convertFromUTC($event->created_at, Auth::user()->timezone, 'Y-m-d H:i:s') }}</td>
                              <td>{{ $event->flip }}</td>
                              <td>{{ $event->value }}</td>
                              <td>{{ $event->watered }}</td>
