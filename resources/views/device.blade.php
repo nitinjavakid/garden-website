@@ -1,16 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-
-<script>
-</script>
 <div class="container">
+    {{ Breadcrumbs::render('device', $device) }}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
             <div class="panel-heading">Device
                 @if ($device->id != null)
-                    {{ $device->name }}</div>
+                    - {{ $device->name }}</div>
                 @endif
 
                 <div class="panel-body">
