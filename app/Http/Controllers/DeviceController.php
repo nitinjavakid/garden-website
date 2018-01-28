@@ -133,12 +133,13 @@ class DeviceController extends Controller
     }
 
     public function execute(Request $request, $id)
-    {
+    {     
         $device = Device::findOrFail($id);
         $idx = $request->input("i");
         $flip = $request->input("f");
         $value = $request->input("v");
         $watering_system = null;
+        $watered = false;
 
         if($idx != null &&
            $flip != null &&
@@ -152,10 +153,28 @@ class DeviceController extends Controller
             if($task->plant->device->id == $device->id)
             {
                 $watering_system = \App\WateringSystems\WateringSystem::deserialize($task->data);
-                if(true || (($flip) && ($value < 512)) ||
-                   ((!$flip) && ($value > 512)))
+
+                if($task->rules != null)
                 {
-                    $watered = true;
+                    $event_watered_timestamp = 0;
+                    $last_event = DB::table("events")->where([
+                        ['task_id', '=', $task->id],
+                        ['watered', '>', 0]
+                    ])->max("created_at");
+                    if($last_event != null)
+                    {
+                        $event_watered_timestamp = Carbon::parse($last_event)->timestamp;
+                    }
+
+                    $evaluator = new \App\RuleEvaluator($task->rules);
+                    $evaluator->set("event_watered_timestamp", $event_watered_timestamp);
+                    $evaluator->set("value", $value);
+                    $evaluator->set("flip", $flip);
+
+                    if($evaluator->evaluate())
+                    {
+                        $watered = true;
+                    }
                 }
 
                 DB::beginTransaction();

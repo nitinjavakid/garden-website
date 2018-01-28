@@ -57,6 +57,7 @@ class TaskController extends Controller
             $task->plant_id = $request->input("plant_id");
             $task->time_interval = $request->input("time_interval");
             $task->watering_system_index = $request->input("watering_system_index");
+            $task->rules = $request->input("rules");
             $task->enabled = $request->has("enabled");
             $task->save();
 
@@ -131,6 +132,7 @@ class TaskController extends Controller
         {
             $task->name = $request->input("name");
             $task->time_interval = $request->input("time_interval");
+            $task->rules = $request->input("rules");
             if($task->watering_system_index != $request->input("watering_system_index"))
             {
                 $task->watering_system_index = $request->input("watering_system_index");

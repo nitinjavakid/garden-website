@@ -34,6 +34,9 @@
                              {{ Form::label('time_interval', 'Time interval') }}
                              {{ Form::text("time_interval", null, ["class" => "form-control"]) }}
 
+                             {{ Form::label('rules', 'Executing rule') }}
+                             {{ Form::textarea("rules", null, ["class" => "form-control"]) }}
+
                              {{ Form::label('watering_system', 'Watering System') }}
                              {{ Form::select('watering_system_index', $watering_systems, null, ["class" => "form-control"]) }}
 
