@@ -55,6 +55,9 @@
 
                                 <ul class="dropdown-menu">
                                     <li>
+                                        <a href="{{ route('home') }}">
+                                            Dashboard
+                                        </a>
                                         <a href="{{ route('profile') }}">
                                             Profile
                                         </a>
