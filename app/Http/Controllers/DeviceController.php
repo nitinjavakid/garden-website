@@ -111,7 +111,7 @@ class DeviceController extends Controller
                                 $time_interval = min($task->time_interval, $time_interval);
                             }
 
-                            $config .= "," . $task->id . "," .
+                            $config .= "," . $plant->id . "," .
                                   $plant->forward_pin . "," .
                                   $plant->reverse_pin . "," .
                                   $plant->adc_pin;
@@ -149,55 +149,74 @@ class DeviceController extends Controller
             $flip = (int) $flip;
             $value = (int) $value;
 
-            $task = Task::findOrFail($idx);
-            if($task->plant->device->id == $device->id)
+            $plant = Plant::findOrFail($idx);
+            if($plant->device->id == $device->id)
             {
-                $watering_system = \App\WateringSystems\WateringSystem::deserialize($task->data);
+                $tasks = DB::table('tasks')->where('enabled', true)
+                       ->where('plant_id', '=', $plant->id)->get();
 
-                if($task->rules != null)
+                foreach($tasks as $task)
                 {
-                    $event_watered_timestamp = 0;
-                    $last_event = DB::table("events")->where([
-                        ['task_id', '=', $task->id],
-                        ['watered', '>', 0]
-                    ])->max("created_at");
-                    if($last_event != null)
+                    if(($task->last_run != null) &&
+                       (Carbon::parse($task->last_run)->addSeconds($task->time_interval)->timestamp >=
+                        Carbon::now()->timestamp))
                     {
-                        $event_watered_timestamp = Carbon::parse($last_event)->timestamp;
+                        continue;
                     }
 
-                    $evaluator = new \App\RuleEvaluator($task->rules);
-                    $evaluator->set("event_watered_timestamp", $event_watered_timestamp);
-                    $evaluator->set("value", $value);
-                    $evaluator->set("flip", $flip);
+                    $watering_system = \App\WateringSystems\WateringSystem::deserialize($task->data);
 
-                    if($evaluator->evaluate())
+                    if($task->rules != null)
                     {
-                        $watered = true;
+                        $event_watered_timestamp = 0;
+                        $last_event = DB::table("events")->where([
+                            ['task_id', '=', $task->id],
+                            ['watered', '>', 0]
+                        ])->max("created_at");
+                        if($last_event != null)
+                        {
+                            $event_watered_timestamp = Carbon::parse($last_event)->timestamp;
+                        }
+
+                        $evaluator = new \App\RuleEvaluator($task->rules);
+                        $evaluator->set("event_watered_timestamp", $event_watered_timestamp);
+                        $evaluator->set("value", $value);
+                        $evaluator->set("flip", $flip);
+
+                        if($evaluator->evaluate())
+                        {
+                            $watered = true;
+                        }
                     }
-                }
 
-                DB::beginTransaction();
-                try
-                {
-                    $event = new Event;
-                    $event->task_id = $task->plant->id;
-                    $event->value = $value;
-                    $event->flip = $flip;
-                    $event->watered = $watered ? $watering_system->getWateringTime() : 0;
-                    $event->save();
-
-                    if($watered)
+                    DB::beginTransaction();
+                    try
                     {
-                        $plant = $task->plant;
-                        $plant->last_watered_event_id = $event->id;
-                        $plant->save();
+                        $event = new Event;
+                        $event->task_id = $task->id;
+                        $event->value = $value;
+                        $event->flip = $flip;
+                        $event->watered = $watered ? $watering_system->getWateringTime() : 0;
+                        $event->save();
+
+                        $task = Task::findOrFail($task->id);
+                        $task->last_run = now();
+                        $task->save();
+
+                        if($watered)
+                        {
+                            $plant = $task->plant;
+                            $plant->last_watered_event_id = $event->id;
+                            $plant->save();
+                        }
+                        DB::commit();
+                        break;
                     }
-                    DB::commit();
-                }
-                catch( \Exception $e)
-                {
-                    DB::rollback();
+                    catch( \Exception $e)
+                    {
+                        print_r($e);
+                        DB::rollback();
+                    }
                 }
             }
         }
